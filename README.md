@@ -135,8 +135,6 @@ ffmpeg -version
 6. Rename it to `serviceAccountKey.json`
 7. Place it in the `backend/` directory
 
-**Important**: Add `serviceAccountKey.json` to your `.gitignore` file to prevent committing sensitive credentials.
-
 #### Option 2: Firebase Emulator (Local Development)
 
 ```bash
@@ -259,12 +257,6 @@ verbal-test-app/
 7. **Results Display**: Show pronunciation, fluency, clarity, and confidence scores
 8. **Data Storage**: Results saved to Firebase Firestore
 
-## Call Center Questions
-
-1. **Customer Service Scenario**: Handle difficult customer situations
-2. **Motivation & Performance**: Maintain high performance during repetitive tasks
-3. **Stress Management**: Work under pressure and meet deadlines
-
 ## Audio Requirements
 
 - **Supported Formats**: WAV, MP3, Opus, OGG, AMR
@@ -385,14 +377,6 @@ For technical support or questions:
 1. **Documentation**: Check this README and inline code comments
 2. **SpeechSuper API**: Refer to [SpeechSuper documentation](https://www.speechsuper.com/)
 
-## Changelog
 
-### Version 1.0.0
-- Initial release with React 19 and FastAPI backend
-- SpeechSuper API integration
-- Firebase Firestore database
-- FFmpeg audio processing
-- Complete assessment workflow
 
----
 
