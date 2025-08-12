@@ -40,10 +40,10 @@ Before you begin, ensure you have the following installed on your system:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/verbal-test-app.git
+git clone https://github.com/TerrorBlade2002/Automated-Verbal-Assessment-System.git
 
 # Navigate to the project directory
-cd verbal-test-app
+cd Automated-Verbal-Assessment-System
 ```
 
 ### Step 2: Frontend Setup
