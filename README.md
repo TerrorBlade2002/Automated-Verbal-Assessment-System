@@ -1,6 +1,6 @@
-# Verbal Test App - Call Center Assessment System
+# Automated Verbal Assessment App - NLP-powered Interview System
 
-A comprehensive call center interview assessment system with AI-powered English speech evaluation using SpeechSuper API. The system evaluates candidates through voice recordings and provides detailed scoring on pronunciation, fluency, clarity, and confidence.
+A comprehensive interview assessment system with NLP-powered English speech evaluation using SpeechSuper API. The system evaluates candidates through voice recordings and provides detailed scoring on pronunciation, fluency, clarity, and confidence.
 
 ## Features
 
