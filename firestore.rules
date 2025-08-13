@@ -1,14 +1,33 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+
     // Users collection - allow read/write for development
     match /users/{userId} {
       allow read, write: if true;
     }
     
-    // Assessments collection - allow read/write for development
+    // NEW: Flattened assessment_items collection
+    match /assessment_items/{docId} {
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow read, update, delete: if signedIn() && resource.data.user_id == request.auth.uid;
+
+      // Optional lightweight schema checks
+      allow create, update: if
+        request.resource.data.keys().hasAll([
+          'user_id','assessment_id','question_id','speechsuper_response'
+        ]);
+    }
+    
+    // Legacy assessments collection - maintain backward compatibility
     match /assessments/{assessmentId} {
       allow read, write: if true;
+      
+      // Results subcollection (legacy - will be migrated)
+      match /results/{resultId} {
+        allow read, write: if true;
+      }
     }
     
     // For production, you would want more restrictive rules like:

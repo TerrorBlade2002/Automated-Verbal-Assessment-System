@@ -1,145 +1,150 @@
 #!/usr/bin/env python3
 """
-Setup script for the Verbal Test API Backend
+Setup script for Verbal Test App Backend
 """
-
-import subprocess
-import sys
 import os
+import sys
+import subprocess
+import platform
 from pathlib import Path
 
 def run_command(command, description):
     """Run a command and handle errors"""
-    print(f"\n{description}...")
+    print(f"🔄 {description}...")
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
         print(f"✅ {description} completed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ {description} failed:")
-        print(f"Error: {e.stderr}")
+        print(f"❌ {description} failed: {e}")
+        print(f"   Error output: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"❌ {description} failed with unexpected error: {e}")
         return False
 
-def check_dependencies():
-    """Check if required dependencies are available"""
-    print("🔍 Checking dependencies...")
-    
-    # Check Python version
-    if sys.version_info < (3, 8):
-        print("❌ Python 3.8 or higher is required")
+def check_python_version():
+    """Check if Python version is compatible"""
+    print("🔍 Checking Python version...")
+    version = sys.version_info
+    if version.major < 3 or (version.major == 3 and version.minor < 8):
+        print(f"❌ Python {version.major}.{version.minor} is not supported. Please use Python 3.8 or higher.")
         return False
-    print(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} detected")
-    
-    # Check if ffmpeg is available
-    try:
-        subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
-        print("✅ FFmpeg is available")
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("⚠️  FFmpeg not found. Audio conversion may not work properly.")
-        print("   Install FFmpeg: https://ffmpeg.org/download.html")
-    
+    print(f"✅ Python {version.major}.{version.minor}.{version.micro} is compatible")
     return True
 
-def install_requirements():
-    """Install Python requirements"""
-    if not os.path.exists("requirements.txt"):
-        print("❌ requirements.txt not found")
+def install_dependencies():
+    """Install Python dependencies"""
+    print("📦 Installing Python dependencies...")
+    requirements_file = Path("requirements.txt")
+    
+    if not requirements_file.exists():
+        print("❌ requirements.txt not found in current directory")
         return False
     
-    return run_command(
-        f"{sys.executable} -m pip install -r requirements.txt",
-        "Installing Python requirements"
-    )
+    return run_command("pip install -r requirements.txt", "Installing dependencies")
+
+def check_ffmpeg():
+    """Check if FFmpeg is available"""
+    print("🔍 Checking FFmpeg installation...")
+    
+    # Try different ffmpeg executable names for Windows compatibility
+    ffmpeg_executables = ['ffmpeg', 'ffmpeg.exe']
+    
+    for exe in ffmpeg_executables:
+        try:
+            result = subprocess.run([exe, '-version'], capture_output=True, timeout=5)
+            if result.returncode == 0:
+                print(f"✅ FFmpeg found: {exe}")
+                return True
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            continue
+    
+    print("❌ FFmpeg not found. Please install FFmpeg:")
+    print("   Windows: Use Chocolatey (choco install ffmpeg) or download from ffmpeg.org")
+    print("   macOS: brew install ffmpeg")
+    print("   Linux: sudo apt install ffmpeg (Ubuntu/Debian)")
+    return False
 
 def setup_firebase():
     """Setup Firebase configuration"""
-    print("\n🔥 Setting up Firebase...")
+    print("🔥 Setting up Firebase...")
     
     service_key_path = "serviceAccountKey.json"
-    if not os.path.exists(service_key_path):
-        print(f"⚠️  Firebase service account key not found at {service_key_path}")
-        print("   You can:")
-        print("   1. Place your Firebase service account key at 'serviceAccountKey.json'")
-        print("   2. Or set up Firebase emulator for local development")
-        print("   3. Or use default credentials in production environment")
-    else:
-        print(f"✅ Firebase service account key found at {service_key_path}")
     
-    return True
+    if Path(service_key_path).exists():
+        print("✅ Firebase service account key found")
+        return True
+    else:
+        print("⚠️  Firebase service account key not found")
+        print("   1. Place your Firebase service account key at 'serviceAccountKey.json'")
+        print("   2. Or use Firebase emulator for local development")
+        return False
 
 def create_env_file():
-    """Create environment file template"""
-    env_file = ".env"
-    if not os.path.exists(env_file):
-        print(f"\n📝 Creating {env_file} template...")
-        env_content = """# Environment variables for Verbal Test API
-
-# Development settings
-DEBUG=true
+    """Create .env file with configuration"""
+    print("📝 Creating environment configuration...")
+    
+    env_content = f"""# Backend Configuration
 PORT=3001
+FRONTEND_URL=http://localhost:5173
 
-# SpeechSuper API settings
-SPEECHSUPER_APP_KEY=os.getenv("SPEECHSUPER_APP_KEY", "")
-SPEECHSUPER_SECRET_KEY=os.getenv("SPEECHSUPER_SECRET_KEY", "")
+# SpeechSuper API credentials (already configured in code)
+SPEECHSUPER_APP_KEY=17467708300004bd
+SPEECHSUPER_SECRET_KEY=82a4235f5f2f9932c5511703fb84dad6
 
 # Firebase settings (optional - uses serviceAccountKey.json if available)
 # GOOGLE_APPLICATION_CREDENTIALS=path/to/serviceAccountKey.json
 
-# CORS settings
-CORS_ORIGINS=["http://localhost:5173", "http://localhost:3000"]
+# Logging
+LOG_LEVEL=INFO
 """
+    
+    env_file = Path(".env")
+    if env_file.exists():
+        print("⚠️  .env file already exists, skipping creation")
+        return True
+    
+    try:
         with open(env_file, 'w') as f:
             f.write(env_content)
-        print(f"✅ Created {env_file} template")
-    else:
-        print(f"✅ {env_file} already exists")
-    
-    return True
+        print("✅ .env file created successfully")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to create .env file: {e}")
+        return False
 
 def main():
     """Main setup function"""
-    print("🚀 Setting up Verbal Test API Backend with SpeechSuper Integration")
-    print("=" * 60)
+    print("🚀 Setting up Verbal Test App Backend...")
+    print("=" * 50)
     
-    # Change to backend directory if needed
-    backend_dir = Path(__file__).parent
-    os.chdir(backend_dir)
-    print(f"📁 Working directory: {os.getcwd()}")
+    # Check Python version
+    if not check_python_version():
+        return False
     
-    success = True
+    # Install dependencies
+    if not install_dependencies():
+        return False
     
-    # Check dependencies
-    if not check_dependencies():
-        success = False
-    
-    # Install requirements
-    if not install_requirements():
-        success = False
+    # Check FFmpeg
+    if not check_ffmpeg():
+        print("⚠️  FFmpeg is required for audio processing. Setup will continue but audio features may not work.")
     
     # Setup Firebase
-    if not setup_firebase():
-        success = False
+    setup_firebase()
     
     # Create environment file
-    if not create_env_file():
-        success = False
+    create_env_file()
     
-    print("\n" + "=" * 60)
-    if success:
-        print("🎉 Setup completed successfully!")
-        print("\n📋 Next steps:")
-        print("1. Place your Firebase service account key at 'serviceAccountKey.json' (optional)")
-        print("2. Install FFmpeg if not already available")
-        print("3. Run the server: python main.py")
-        print("4. Test the API: http://localhost:3001/api/health")
-        print("5. View API docs: http://localhost:3001/docs")
-    else:
-        print("❌ Setup completed with errors. Please check the output above.")
+    print("=" * 50)
+    print("✅ Backend setup completed!")
+    print("📋 Next steps:")
+    print("1. Place your Firebase service account key at 'serviceAccountKey.json' (optional)")
+    print("2. Run the backend: python main.py")
+    print("3. Or use: npm run dev:server (from project root)")
     
-    print("\n🔗 Useful links:")
-    print("- SpeechSuper API docs: https://docs.speechsuper.com/")
-    print("- FastAPI docs: https://fastapi.tiangolo.com/")
-    print("- Firebase docs: https://firebase.google.com/docs/")
+    return True
 
 if __name__ == "__main__":
     main()

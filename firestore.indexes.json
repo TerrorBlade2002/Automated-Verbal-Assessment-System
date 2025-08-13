@@ -1,0 +1,46 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "assessment_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "assessment_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "assessment_id", "order": "ASCENDING" },
+        { "fieldPath": "question_index", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "assessment_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "assessment_id", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "assessment_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "overall", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "assessment_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "created_at", "order": "DESCENDING" },
+        { "fieldPath": "overall", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

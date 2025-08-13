@@ -45,8 +45,8 @@ app.add_middleware(
 
 # SpeechSuper API configuration
 SPEECHSUPER_BASE_URL = "https://api.speechsuper.com/"
-SPEECHSUPER_APP_KEY = os.getenv("SPEECHSUPER_APP_KEY", "")
-SPEECHSUPER_SECRET_KEY = os.getenv("SPEECHSUPER_SECRET_KEY", "")
+SPEECHSUPER_APP_KEY = "17467708300004bd"
+SPEECHSUPER_SECRET_KEY = "82a4235f5f2f9932c5511703fb84dad6"
 CORE_TYPE = "asr.eval"
 
 async def standardize_audio_with_ffmpeg(audio_content: bytes, input_format: str = "mp3") -> bytes:
